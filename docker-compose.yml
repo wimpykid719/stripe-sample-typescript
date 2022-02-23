@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  app:
+    build: .
+    container_name: stripe-practice
+    ports:
+      - '8080:8080'
+    working_dir: /stripe-practice
+    volumes:
+      - ./:/stripe-practice
+    # docker run -iを意味する
+    stdin_open: true
+    # -tを意味する
+    tty: true
