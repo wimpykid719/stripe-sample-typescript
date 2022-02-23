@@ -3,9 +3,13 @@
 
 import Stripe from 'stripe'
 import express from 'express'
-import exphbs from 'express-handlebars'
 
 const stripe = new Stripe('sk_test_09l3shTSTKHYCzzZZsiLl2vA', { apiVersion: '2020-08-27' })
+
+const app = express()
+
+app.use(express.static('public'))
+app.use(express.json())
 
 // オーダの金額を計算するコードを書く
 const calculateOrderAmount = (items: Items) => {
@@ -16,34 +20,6 @@ const calculateOrderAmount = (items: Items) => {
   // people from directly manipulating the amount on the client
   return 1400
 }
-
-async function getSecretKey() {
-  const paymentIntent = await stripe.paymentIntents.create({
-    amount: 1099,
-    currency: 'usd',
-    // Verify your integration in this guide by including this parameter
-    metadata: { integration_check: 'accept_a_payment' },
-  })
-  return paymentIntent
-}
-
-const app = express()
-
-app.use(express.static('public'))
-app.use(express.json())
-
-app.listen(4242, () => {
-  console.log('Running on port 4242')
-})
-
-app.get('/', async (req, res) => {
-  res.render('home')
-})
-
-app.get('/checkout', async (req: express.Request, res: express.Response) => {
-  const intent = await getSecretKey()
-  res.render('checkout', { client_secret: intent.client_secret }) // ... Fetch or create the PaymentIntent
-})
 
 type Items = {
   id: string[]
@@ -69,4 +45,8 @@ app.post('/create-payment-intent', async (req: CustomRequest<ItemsBody>, res: ex
   res.send({
     clientSecret: paymentIntent.client_secret,
   })
+})
+
+app.listen(4242, () => {
+  console.log('Running on port 4242')
 })

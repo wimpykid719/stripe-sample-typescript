@@ -4,10 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start-client": "react-scripts start",
-    "start-server": "node server.js",
+    "start-client": "npx webpack-dev-server",
+    "start-server": "concurrently \"npx tsc\" \"node dist/backend/server.js\"",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "concurrently \"yarn start-client\" \"yarn start-server\""
+    "start": "concurrently \"npm run start-client\" \"npm run start-server\""
   },
   "author": "",
   "license": "ISC",
@@ -17,6 +17,7 @@
     "@types/express": "^4.17.13",
     "@types/express-handlebars": "^5.3.1",
     "@types/node": "^16.11.25",
+    "concurrently": "^7.0.0",
     "eslint-config-prettier": "^8.4.0",
     "express": "^4.17.3",
     "express-handlebars": "^5.3.5",
@@ -27,8 +28,6 @@
     "stripe": "^8.203.0",
     "typescript": "^4.5.5"
   },
-  "homepage": "http://localhost:8080/checkout",
-  "proxy": "http://localhost:4242",
   "devDependencies": {
     "@types/node-fetch": "^2.6.1",
     "@types/react": "^17.0.39",
@@ -44,6 +43,7 @@
     "eslint-plugin-jsx-a11y": "^6.5.1",
     "eslint-plugin-react": "^7.28.0",
     "eslint-plugin-react-hooks": "^4.3.0",
+    "html-webpack-plugin": "^5.5.0",
     "style-loader": "^3.3.1",
     "ts-loader": "^9.2.6",
     "ts-node": "^10.5.0",
