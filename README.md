@@ -14,7 +14,7 @@ TypeScriptでstripeを導入する方の手助けになれば幸いです。
 docker-compose up --build
 
 # コンテナに入る
-docker-compose exec web bash
+docker-compose exec app bash
 
 # 必要なパッケージをダウンロードする
 # npm install
