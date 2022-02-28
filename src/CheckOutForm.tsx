@@ -6,7 +6,7 @@ import {
   useElements
 } from "@stripe/react-stripe-js";
 
-import { PaymentIntentResult, StripeError } from '@stripe/stripe-js'
+import { PaymentIntentResult } from '@stripe/stripe-js'
 
 
 // import { CardElementType } from './types/stripe'
@@ -54,7 +54,7 @@ export default function CheckoutForm() {
     });
   }, [stripe]);
 
-  const handleSubmit = async (e: { preventDefault: () => void; }) => {
+  const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
 
     if (!stripe || !elements) {
