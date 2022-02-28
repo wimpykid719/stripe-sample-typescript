@@ -6,7 +6,7 @@ import {
   useElements
 } from "@stripe/react-stripe-js";
 
-import { PaymentIntentResult, StripeError } from '@stripe/stripe-js'
+import { PaymentIntentResult } from '@stripe/stripe-js'
 
 
 // import { CardElementType } from './types/stripe'
@@ -36,25 +36,51 @@ export default function CheckoutForm() {
       return;
     }
 
-    stripe.retrievePaymentIntent(clientSecret).then(({ paymentIntent }: PaymentIntentResult) => {
-      switch (paymentIntent?.status) {
-        case "succeeded":
-          setMessage("Payment succeeded!");
-          break;
-        case "processing":
-          setMessage("Your payment is processing.");
-          break;
-        case "requires_payment_method":
-          setMessage("Your payment was not successful, please try again.");
-          break;
-        default:
-          setMessage("Something went wrong.");
-          break;
-      }
-    });
+    stripe.retrievePaymentIntent(clientSecret)
+      .then(({ paymentIntent, error }: PaymentIntentResult) => {
+        if (!paymentIntent) return;
+        switch (paymentIntent?.status) {
+          case "succeeded":
+            setMessage("Payment succeeded!");
+            break;
+          case "processing":
+            setMessage("Your payment is processing.");
+            break;
+          case "canceled":
+            setMessage("Your payment is canceled.");
+            break;
+          case "requires_payment_method":
+            setMessage("You need to add your payment method.");
+            break;
+          case "requires_confirmation":
+            setMessage("You need to confirm the payment.");
+            break;
+          case "requires_action":
+            setMessage(`You need to complete next action: ${JSON.stringify(paymentIntent.next_action, null, 2)}`)
+            break;
+          default: {
+            /**
+             * productionでは、errorはSentryなどに送信し、
+             * ユーザーへは「読み込みに失敗しました、サポートにお問い合わせください」のような
+             * メッセージにしたほうが親切です。
+             * が、練習・動作確認時点では、エラーメッセージをすぐ読める方が楽かなと思います。
+             */
+            if (error) {
+              setMessage(`${error.code}: ${error.message}`)
+            } else {
+              setMessage(`The payment status is ${paymentIntent.status}`);
+            }
+            break;
+          }
+        }
+      });
   }, [stripe]);
 
-  const handleSubmit = async (e: { preventDefault: () => void; }) => {
+  /**
+   * formタグのonSubmitイベントに設定する関数には、
+   * この型が使えます。
+   */
+  const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
 
     if (!stripe || !elements) {
@@ -73,12 +99,12 @@ export default function CheckoutForm() {
       },
     });
 
-    // This point will only be reached if there is an immediate error when
-    // confirming the payment. Otherwise, your customer will be redirected to
-    // your `return_url`. For some payment methods like iDEAL, your customer will
-    // be redirected to an intermediate site first to authorize the payment, then
-    // redirected to the `return_url`.
-    if (error.type === "card_error" || error.type === "validation_error") {
+    /**
+     * ３Dセキュア認証のエラーや不正検知などでエラーになる場合もあります。
+     * そのため、広くエラーメッセージを拾うことをおすすめします。
+     * @see https://stripe.com/docs/testing#regulatory-cards
+     */
+    if (error.message) {
       setMessage(error.message);
     } else {
       setMessage("An unexpected error occured.");
