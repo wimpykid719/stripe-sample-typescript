@@ -1,11 +1,18 @@
-## Stripeの公式サンプルコード（React, node）をTypeScript化しました。
+## Stripe の公式サンプルコード（React, node）を TypeScript 化しました。
 
 [stripe Docs - カスタムの支払いフロー](https://stripe.com/docs/payments/quickstart)
 
 公式にいいサンプルがなく、型注釈を必要としたり少し設定が難しくエラーを解消するのに時間がかかったので作成しました。
 
-TypeScriptでstripeを導入する方の手助けになれば幸いです。
+TypeScript で stripe を導入する方の手助けになれば幸いです。
 
+## Setup Stripe Secret API Key
+
+```bash
+% cp .env.example .env
+
+# .envのSTRIPE_SECRET_API_KEYを使用したいStripeアカウントのSecret APIキーに変更する
+```
 
 ## Installation
 
@@ -17,7 +24,7 @@ docker-compose up --build
 docker-compose exec app bash
 
 # 必要なパッケージをダウンロードする
-# npm install
+npm install
 ```
 
 ## Usage
@@ -36,8 +43,7 @@ npm run start
 
 ![stripe-ts-succeeded](https://user-images.githubusercontent.com/23703281/155454997-0ae29fed-72c5-4170-b45e-38d2f8797308.png)
 
-値を入力しPay Nowをクリックすると成功とともにURLに`paymentIntent` が返ってきます。
-
+値を入力し Pay Now をクリックすると成功とともに URL に`paymentIntent` が返ってきます。
 
 ## お願い
 

@@ -4,8 +4,6 @@
 import Stripe from 'stripe'
 import express from 'express'
 
-const stripe = new Stripe('sk_test_09l3shTSTKHYCzzZZsiLl2vA', { apiVersion: '2020-08-27' })
-
 const app = express()
 
 app.use(express.static('public'))
@@ -37,6 +35,7 @@ app.post('/create-payment-intent', async (req: CustomRequest<ItemsBody>, res: ex
   const { items }: ItemsBody = req.body
 
   // Create a PaymentIntent with the order amount and currency
+  const stripe = new Stripe(process.env.STRIPE_SECRET_API_KEY as string, { apiVersion: '2020-08-27' })
   const paymentIntent: Stripe.PaymentIntent = await stripe.paymentIntents.create({
     amount: calculateOrderAmount(items),
     currency: 'usd',
